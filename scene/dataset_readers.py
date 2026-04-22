@@ -118,10 +118,12 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder):
         image = Image.open(image_path)
 
         # NOTE: load SAM mask and CLIP feat. [OpenGaussian]
-        mask_seg_path = os.path.join(images_folder[:-6], "language_features/" + extr.name.split('/')[-1][:-4] + "_s.npy")
-        mask_feat_path = os.path.join(images_folder[:-6], "language_features/" + extr.name.split('/')[-1][:-4] + "_f.npy")
+        base_path = images_folder[:-6] if images_folder.endswith('images') else os.path.dirname(images_folder)
+        mask_seg_path = os.path.join(base_path, "language_features", image_name + "_s.npy")
+        mask_feat_path = os.path.join(base_path, "language_features", image_name + "_f.npy")
+        
         if os.path.exists(mask_seg_path):
-            sam_mask = np.load(mask_seg_path)    # [level=4, H, W]
+            sam_mask = np.load(mask_seg_path)    # [level, H, W]
         else:
             sam_mask = None
         if mask_feat_path is not None and os.path.exists(mask_feat_path):
